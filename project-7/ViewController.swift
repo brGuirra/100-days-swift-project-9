@@ -14,6 +14,7 @@ class ViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Fecth data from the URL
         let urlString = "https://www.hackingwithswift.com/samples/petitions-1.json"
         
         if let url = URL(string: urlString) {
@@ -23,6 +24,7 @@ class ViewController: UITableViewController {
         }
     }
     
+    // Parse the JSON and insert in the petitions array
     func parse(json: Data) {
         let decoder = JSONDecoder()
         
@@ -44,6 +46,14 @@ class ViewController: UITableViewController {
         cell.detailTextLabel?.text = petition.body
 
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let vc = DetailViewController()
+        
+        vc.detaildItem = petitions[indexPath.row]
+        
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
