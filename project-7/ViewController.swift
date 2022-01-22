@@ -7,9 +7,12 @@
 
 import UIKit
 
-class ViewController: UITableViewController {
+class ViewController: UITableViewController, UISearchResultsUpdating {
     var petitions = [Petition]()
     
+    var filteredPetitions = [Petition]()
+    
+    var searchController = UISearchController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,6 +20,17 @@ class ViewController: UITableViewController {
         title = "Petitions"
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Credits", style: .plain, target: self, action: #selector(showCredits))
+        
+        // Defines searchController configurations and appends it
+        // to the header of TableView
+        self.searchController = ({
+            let controller = UISearchController(searchResultsController: nil)
+            controller.searchResultsUpdater = self
+            controller.searchBar.placeholder = "Search petitions"
+            controller.searchBar.sizeToFit()
+            self.tableView.tableHeaderView = controller.searchBar
+            return controller
+        })()
         
         // Fecth data from the URL
         let urlString: String
@@ -60,14 +74,39 @@ class ViewController: UITableViewController {
             tableView.reloadData()
         }
     }
-
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let text = searchController.searchBar.text else { return }
+        
+        // Remove previous search results
+        filteredPetitions.removeAll(keepingCapacity: false)
+        
+        for petition in petitions {
+            if petition.title.contains(text) || petition.body.contains(text) {
+                filteredPetitions.append(petition)
+            }
+        }
+        
+        self.tableView.reloadData()
+    }
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if (self.searchController.isActive) {
+            return filteredPetitions.count
+        }
+        
         return petitions.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        let petition = petitions[indexPath.row]
+        let petition: Petition
+        
+        if (self.searchController.isActive) {
+            petition = filteredPetitions[indexPath.row]
+        } else {
+            petition = petitions[indexPath.row]
+        }
         
         cell.textLabel?.text = petition.title
         cell.detailTextLabel?.text = petition.body
@@ -80,6 +119,7 @@ class ViewController: UITableViewController {
         
         vc.detaildItem = petitions[indexPath.row]
         
+        self.searchController.isActive = false
         navigationController?.pushViewController(vc, animated: true)
     }
 }
