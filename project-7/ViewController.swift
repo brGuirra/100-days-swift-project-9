@@ -16,6 +16,8 @@ class ViewController: UITableViewController {
         
         title = "Petitions"
         
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Credits", style: .plain, target: self, action: #selector(showCredits))
+        
         // Fecth data from the URL
         let urlString: String
         
@@ -33,6 +35,13 @@ class ViewController: UITableViewController {
         }
         
         showError()
+    }
+    
+    @objc func showCredits() {
+        let ac = UIAlertController(title: "Credits", message: "This data comes from \"We The People API of the Whitehouse\"", preferredStyle: .alert)
+        
+        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        present(ac, animated: true)
     }
     
     func showError() {
