@@ -23,17 +23,18 @@ class DetailViewController: UIViewController {
         guard let detaildItem = detaildItem else {
             return
         }
-
+        
         let html = """
         <html>
             <head>
                 <meta name="viewport" content="width=device-width, initial-scale=1">
                 <style>
-                    body { font-size: 150%; }
+                    p { font-size: 150%; text-indent: 3ch;}
                 </style>
             </head>
             <body>
-                \(detaildItem.body)
+                <h1>\(detaildItem.title)</h1>
+                <p>\(detaildItem.body)</p>
             </body>
         </html>
         """
