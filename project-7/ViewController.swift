@@ -96,13 +96,25 @@ class ViewController: UITableViewController, UISearchResultsUpdating {
         // Remove previous search results
         filteredPetitions.removeAll(keepingCapacity: false)
         
+        DispatchQueue.global(qos: .userInitiated).async {
+            [weak self] in
+            
+            self?.searchPetitions(text: text)
+        }
+    }
+    
+    func searchPetitions(text: String) {
         for petition in petitions {
             if petition.title.contains(text) || petition.body.contains(text) {
                 filteredPetitions.append(petition)
             }
         }
         
-        self.tableView.reloadData()
+        DispatchQueue.main.async {
+            [weak self] in
+            
+            self?.tableView.reloadData()
+        }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
